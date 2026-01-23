@@ -1,0 +1,55 @@
+bundle:
+  name: dab-practice-ejercicio
+
+include:
+  - resource/*.yml
+
+variables:
+  catalog:
+    description: Catalogo por defecto
+    default: "data-growth"
+
+targets:
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://dbc-52dd6d65-6695.cloud.databricks.com
+    resources:
+      jobs:
+        job_orquestador:
+          email_notifications:
+            on_failure:
+              - ${workspace.current_user.userName}
+  
+  qa:
+    mode: production
+    workspace:
+      host: https://dbc-52dd6d65-6695.cloud.databricks.com
+      root_path: /Workspace/dab-practice/${workspace.current_user.short_name}/${bundle.target}/.bundle
+      file_path: /Workspace/dab-practice/${workspace.current_user.short_name}/${bundle.target}/
+    resources:
+      jobs:
+        job_orquestador:
+          trigger:
+            pause_status: PAUSED
+          email_notifications:
+            on_failure:
+              - ${workspace.current_user.userName}
+  
+  prod:
+    mode: production
+    workspace:
+      host: https://dbc-52dd6d65-6695.cloud.databricks.com
+      root_path: /Workspace/dab-practice/${workspace.current_user.short_name}/${bundle.target}/.bundle
+      file_path: /Workspace/dab-practice/${workspace.current_user.short_name}/${bundle.target}/
+    resources:
+      jobs:
+        job_orquestador:
+          trigger:
+            pause_status: UNPAUSED
+          email_notifications:
+            on_failure:
+              - ${workspace.current_user.userName}
+            on_success:
+              - ${workspace.current_user.userName}

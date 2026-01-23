@@ -1,0 +1,62 @@
+resources:
+  # 1. SCHEMA
+  schemas:
+    esquema_ejercicio:
+      name: ${bundle.target}_schema_user
+      catalog_name: ${var.catalog}
+      comment: "Esquema creado por DAB para ${bundle.target}"
+
+  # 2. VOLUME
+  volumes:
+    volumen_ejercicio:
+      name: raw_files_volume
+      catalog_name: ${var.catalog}
+      schema_name: ${resources.schemas.esquema_ejercicio.name}
+      volume_type: MANAGED
+      comment: "Dropzone para llegada de archivos"
+
+  # 3. DLT PIPELINE
+  pipelines:
+    mi_dlt_pipeline:
+      name: ${bundle.target}_dlt_pipeline
+      target: ${resources.schemas.esquema_ejercicio.name}
+      catalog: ${var.catalog}
+      serverless: true
+      libraries:
+        - file:
+            path: ../etl_pipeline.sql
+      tags:
+        project: ${bundle.name}
+        env: ${bundle.target}
+
+  # 4. JOB
+  jobs:
+    job_orquestador:
+      name: ${bundle.target}_job_trigger_files
+      tags:
+        project: ${bundle.name}
+        env: ${bundle.target}
+      
+      trigger:
+        file_arrival:
+          url: ${resources.volumes.volumen_ejercicio.volume_path}
+        pause_status: PAUSED
+      parameters:
+        - name: catalog
+          default: ${var.catalog}
+        - name: schema
+          default: ${resources.schemas.esquema_ejercicio.name}
+
+      tasks:
+        - task_key: ingesta_notebook
+          notebook_task:
+            notebook_path: ../create_table.ipynb
+            base_parameters:
+              volume_path: ${resources.volumes.volumen_ejercicio.volume_path}
+        
+        - task_key: actualizar_vista
+          depends_on:
+            - task_key: ingesta_notebook
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.mi_dlt_pipeline.id}
+            full_refresh: false
