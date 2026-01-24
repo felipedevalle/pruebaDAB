@@ -21,6 +21,9 @@ resources:
       name: ${bundle.target}_dlt_pipeline
       target: ${resources.schemas.esquema_ejercicio.name}
       catalog: ${var.catalog}
+      configuration:
+        input_catalog: ${var.catalog}
+        input_schema: ${resources.schemas.esquema_ejercicio.name}
       serverless: true
       libraries:
         - file:

@@ -3,5 +3,5 @@ AS SELECT
     zip_code,                   
     SUM(amount) AS total_ventas,
     COUNT(*) as total_transacciones
-FROM ventas
+FROM venta`${input_catalog}`.`${input_schema}`.ventas
 GROUP BY zip_code
