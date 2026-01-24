@@ -4,4 +4,4 @@ AS SELECT
     SUM(amount) AS total_ventas,
     COUNT(*) as total_transacciones
 FROM `${source_catalog}`.${source_schema}.ventas
-GROUP BY zip_code;
+GROUP BY zip_code
