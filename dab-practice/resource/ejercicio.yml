@@ -39,7 +39,7 @@ resources:
       
       trigger:
         file_arrival:
-          url: ${resources.volumes.volumen_ejercicio.volume_path}
+          url: ${resources.volumes.volumen_ejercicio.volume_path}/
         pause_status: PAUSED
       parameters:
         - name: catalog
