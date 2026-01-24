@@ -7,7 +7,7 @@ include:
 variables:
   catalog:
     description: Catalogo por defecto
-    default: "data-growth"
+    default: "data_growth"
 
 targets:
   dev:
